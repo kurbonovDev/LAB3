@@ -1,0 +1,41 @@
+Устновка самого postqres:
+	sudo yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+	sudo yum install -y postgresql15-server
+	sudo /usr/pgsql-15/bin/postgresql-15-setup initdb
+	sudo systemctl enable postgresql-15
+	sudo systemctl start postgresql-15
+
+Создании БД:
+	CREATE DATABASE test;
+	CREATE USER bilol WITH PASSWORD 'test';
+	ALTER DATABASE test OWNER TO bilol;
+	GRANT ALL PRIVILEGES ON DATABASE test TO bilol;
+
+Ошибки при входе как bilol для БД и пришлось сначала поменять файлы конифигурации потом зайти сам как системынй пользователь bilol и потом зайти в БД под bilol:
+	nano /var/lib/pgsql/15/data/pg_ident.conf
+
+	# MAPNAME       SYSTEM-USERNAME         PG-USERNAME
+
+	bilol           postgres                test
+
+	nano /var/lib/pgsql/15/data/pg_hba.conf
+
+	# TYPE  DATABASE        USER            ADDRESS                 METHOD
+	local   all             bilol                                   md5
+
+
+После зашел под bilol:
+	psql -U bilol -d test
+				и создал таблицы:
+	
+	CREATE TABLE table1(
+		id INTEGER,
+		name VARCHAR(20),
+		job_name VARCHAR(20)
+	)
+
+	CREATE TABLE table2(
+		id INTEGER,
+		name VARCHAR(20),
+		age INTEGER
+	)
